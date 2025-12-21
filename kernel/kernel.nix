@@ -76,6 +76,7 @@ pkgs.stdenv.mkDerivation rec {
     # parent and enclave. Can be removed once it's in upstream stable
     # and we rebased.
     ./0001-vsock-virtio-Remove-queued_replies-pushback-logic-6.18.patch
+    ./nbd-vsock-support.patch  # Add VSOCK support to NBD driver
   ];
 
   configurePhase = ''
