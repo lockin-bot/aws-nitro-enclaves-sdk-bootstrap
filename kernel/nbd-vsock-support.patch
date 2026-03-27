@@ -1,0 +1,16 @@
+diff --git a/drivers/block/nbd.c b/drivers/block/nbd.c
+index a05ff68e58d0..90826ac724b4 100644
+--- a/drivers/block/nbd.c
++++ b/drivers/block/nbd.c
+@@ -1224,8 +1224,9 @@ static struct socket *nbd_get_socket(struct nbd_device *nbd, unsigned long fd,
+ 		return NULL;
+ 
+ 	if (!sk_is_tcp(sock->sk) &&
+-	    !sk_is_stream_unix(sock->sk)) {
+-		dev_err(disk_to_dev(nbd->disk), "Unsupported socket: should be TCP or UNIX.\n");
++	    !sk_is_stream_unix(sock->sk) &&
++	    !sk_is_vsock(sock->sk)) {
++		dev_err(disk_to_dev(nbd->disk), "Unsupported socket: should be TCP, UNIX, or VSOCK.\n");
+ 		*err = -EINVAL;
+ 		sockfd_put(sock);
+ 		return NULL;

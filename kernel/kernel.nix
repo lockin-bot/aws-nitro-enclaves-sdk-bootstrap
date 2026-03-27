@@ -40,7 +40,7 @@ let
 in
 pkgs.stdenv.mkDerivation rec {
   pname = "nitro-enclaves-kernel";
-  version = "6.6.79";
+  version = "6.6.130";
 
   depsBuildBuild = with pkgs.pkgsBuildBuild; [
     stdenv.cc
@@ -61,7 +61,7 @@ pkgs.stdenv.mkDerivation rec {
     owner = "gregkh";
     repo = "linux";
     rev = "v${version}";
-    sha256 = "sha256-AVmLqMKWNPsrHYgub12HPSVyAzsM+H92KrbnjeYI2BY=";
+    sha256 = "sha256-f8+aCQ2vIMNuU+ZBH4RTNem7gjGzNRRDQqjWn1vz7BQ=";
   };
 
   files = [
@@ -76,6 +76,7 @@ pkgs.stdenv.mkDerivation rec {
     # parent and enclave. Can be removed once it's in upstream stable
     # and we rebased.
     ./0001-vsock-virtio-Remove-queued_replies-pushback-logic.patch
+    # ./nbd-vsock-support.patch  # Add VSOCK support to NBD driver
   ];
 
   configurePhase = ''
