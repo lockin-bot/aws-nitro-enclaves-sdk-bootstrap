@@ -40,7 +40,7 @@ let
 in
 pkgs.stdenv.mkDerivation rec {
   pname = "nitro-enclaves-kernel";
-  version = "6.6.79";
+  version = "6.19.10";
 
   depsBuildBuild = with pkgs.pkgsBuildBuild; [
     stdenv.cc
@@ -61,7 +61,7 @@ pkgs.stdenv.mkDerivation rec {
     owner = "gregkh";
     repo = "linux";
     rev = "v${version}";
-    sha256 = "sha256-AVmLqMKWNPsrHYgub12HPSVyAzsM+H92KrbnjeYI2BY=";
+    sha256 = "sha256-i0u8lQZE+GUtk79CGyjZfdXXzwO7Tv5gGVTPm3nlXM0=";
   };
 
   files = [
@@ -71,11 +71,12 @@ pkgs.stdenv.mkDerivation rec {
   patches = [
     # This one can be dropped with linux >= v6.8 as it is included
     # in upstream linux kernels starting with v6.8
-    ./nsm.patch
+    # ./nsm.patch
     # Fixes an issue where virtio-vsock goes into a deadlock between
     # parent and enclave. Can be removed once it's in upstream stable
     # and we rebased.
-    ./0001-vsock-virtio-Remove-queued_replies-pushback-logic.patch
+    ./0001-vsock-virtio-Remove-queued_replies-pushback-logic-6.19.10.patch
+    ./nbd-vsock-support.patch  # Add VSOCK support to NBD driver
   ];
 
   configurePhase = ''
