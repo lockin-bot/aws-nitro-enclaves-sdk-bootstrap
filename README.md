@@ -22,7 +22,7 @@ This is a fork of [aws/aws-nitro-enclaves-sdk-bootstrap](https://github.com/aws/
 
 ### Kernel Version
 
-Upgraded from the upstream kernel to **Linux 6.19.10**. This version was chosen because it includes stable support for the kernel features required by our enclave architecture (NBD, dm-crypt/LUKS, virtio-vsock improvements).
+Upgraded from the upstream kernel (6.6) to **Linux 6.19.10**. Linux 6.8+ includes the NSM driver upstream (eliminating the need for a custom `nsm.patch`). The NBD, dm-crypt/LUKS, and VSOCK kernel config options are available on most kernel versions. We chose 6.19.10 as a recent stable release with the latest security fixes. The upstream Nautilus framework uses kernel 4.14, and the upstream `aws-nitro-enclaves-sdk-bootstrap` uses kernel 6.6.
 
 ### Kernel Configuration Changes
 
