@@ -16,6 +16,45 @@ The binaries being built from this repository are used at different stages of bu
 
 * **`init`**: is the bootstrap process for the enclave. This provides the initial userspace process that will setup the file system and drivers and launch the user application.
 
+## Changes from Upstream
+
+This is a fork of [aws/aws-nitro-enclaves-sdk-bootstrap](https://github.com/aws/aws-nitro-enclaves-sdk-bootstrap) with the following modifications:
+
+### Kernel Version
+
+Upgraded from the upstream kernel (6.6) to **Linux 6.19.10**. Linux 6.8+ includes the NSM driver upstream (eliminating the need for a custom `nsm.patch`). The NBD, dm-crypt/LUKS, and VSOCK kernel config options are available on most kernel versions. We chose 6.19.10 as a recent stable release with the latest security fixes. The upstream Nautilus framework uses kernel 4.14, and the upstream `aws-nitro-enclaves-sdk-bootstrap` uses kernel 6.6.
+
+### Kernel Configuration Changes
+
+The following kernel options were enabled beyond the upstream defaults:
+
+- **`CONFIG_BLK_DEV_NBD=y`** — Network Block Device support, used to provide persistent storage to enclaves over VSOCK
+- **`CONFIG_DM_CRYPT=y`** — Device-mapper crypto target, required for LUKS disk encryption inside the enclave
+- **`CONFIG_CRYPTO_AES=y`**, **`CONFIG_CRYPTO_XTS=y`**, **`CONFIG_CRYPTO_AES_NI_INTEL=y`** — AES and XTS cipher support for LUKS encryption
+
+### Kernel Patches
+
+Two patches are applied on top of the upstream kernel:
+
+1. **`0001-vsock-virtio-Remove-queued_replies-pushback-logic-6.19.10.patch`** — Fixes a virtio-vsock deadlock between parent and enclave. Can be removed once the fix lands in upstream stable.
+2. **`nbd-vsock-support.patch`** — Adds VSOCK transport support to the in-kernel NBD client, enabling block device access over VSOCK without requiring TCP.
+
+### Other Changes
+
+- Nix build configurations updated for the new kernel version
+- No modifications to the `init` process, `linuxkit`, or `nsm.ko` driver beyond what was required for the kernel upgrade
+
+### PCR Reproducibility
+
+All builds use Nix for deterministic, reproducible output. To verify PCR values:
+
+1. Build using Nix: `nix-build -A all`
+2. The resulting kernel, init, and nsm.ko are bit-for-bit reproducible
+3. These components are inputs to the EIF (Enclave Image File), which determines PCR0/PCR1/PCR2 values
+4. PCR values registered on-chain (Sui blockchain) can be independently verified by rebuilding from source
+
+Deterministic build settings include fixed `SOURCE_DATE_EPOCH`, `KBUILD_BUILD_TIMESTAMP`, `KBUILD_BUILD_USER`, and `KBUILD_BUILD_HOST` to ensure reproducibility.
+
 ## Build
 
 ### Prerequisites
